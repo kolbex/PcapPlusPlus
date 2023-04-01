@@ -120,22 +120,32 @@ namespace pcpp
 		/**
 		 * @return The type field of the record (the 'T' in __Type__-Length-Value)
 		 */
-		TRecType getType() const { return m_Data->recordType; }
+		TRecType getType() const {
+			if (m_Data == nullptr)
+				return 0;
+
+			return m_Data->recordType;
+		}
 
 		/**
 		 * @return A pointer to the value of the record as byte array (the 'V' in Type-Length- __Value__)
 		 */
-		uint8_t* getValue() const { return m_Data->recordValue; }
+		uint8_t* getValue() const {
+			if (m_Data == nullptr)
+				return nullptr;
+
+			return m_Data->recordValue;
+		}
 
 		/**
 		 * @return True if the TLV record raw data is NULL, false otherwise
 		 */
-		bool isNull() const { return (m_Data == NULL); }
+		bool isNull() const { return (m_Data == nullptr); }
 
 		/**
 		 * @return True if the TLV record raw data is not NULL, false otherwise
 		 */
-		bool isNotNull() const { return (m_Data != NULL); }
+		bool isNotNull() const { return (m_Data != nullptr); }
 
 		/**
 		 * @return A pointer to the TLV record raw data byte stream
@@ -268,7 +278,7 @@ namespace pcpp
 		 * input record.isNull() is true or if the next record is out of bounds of the byte stream, a logical NULL instance
 		 * of TLVRecordType will be returned, meaning TLVRecordType.isNull() will return true
 		 */
-		TLVRecordType getNextTLVRecord(TLVRecordType& record, uint8_t* tlvDataBasePtr, size_t tlvDataLen) const
+		TLVRecordType getNextTLVRecord(TLVRecordType& record, const uint8_t* tlvDataBasePtr, size_t tlvDataLen) const
 		{
 			TLVRecordType resRec(NULL); // for NRVO optimization
 

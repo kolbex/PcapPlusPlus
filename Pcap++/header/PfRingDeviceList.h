@@ -1,6 +1,8 @@
 #ifndef PCAPPP_PF_RING_DEVICE_LIST
 #define PCAPPP_PF_RING_DEVICE_LIST
 
+// GCOVR_EXCL_START
+
 #include "PfRingDevice.h"
 
 /// @file
@@ -53,7 +55,7 @@ namespace pcpp
 		 * (e.g eth0, eth1, etc.)
 		 * @return A pointer to the PF_RING device
 		 */
-		PfRingDevice* getPfRingDeviceByName(const std::string devName) const;
+		PfRingDevice* getPfRingDeviceByName(const std::string &devName) const;
 
 		/**
 		 * Get installed PF_RING version
@@ -63,5 +65,7 @@ namespace pcpp
 	};
 
 } // namespace pcpp
+
+// GCOVR_EXCL_STOP
 
 #endif /* PCAPPP_PF_RING_DEVICE_LIST */

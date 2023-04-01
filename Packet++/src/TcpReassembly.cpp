@@ -41,7 +41,7 @@ TcpReassembly::TcpReassembly(OnTcpMessageReady onMessageReadyCallback, void* use
 	m_RemoveConnInfo = config.removeConnInfo;
 	m_MaxNumToClean = (config.removeConnInfo == true && config.maxNumToClean == 0) ? 30 : config.maxNumToClean;
 	m_MaxOutOfOrderFragments = config.maxOutOfOrderFragments;
-	m_PurgeTimepoint = time(NULL) + PURGE_FREQ_SECS;
+	m_PurgeTimepoint = time(nullptr) + PURGE_FREQ_SECS;
 	m_EnableBaseBufferClearCondition = config.enableBaseBufferClearCondition;
 }
 
@@ -51,10 +51,10 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 	// automatic cleanup
 	if (m_RemoveConnInfo == true)
 	{
-		if (time(NULL) >= m_PurgeTimepoint)
+		if (time(nullptr) >= m_PurgeTimepoint)
 		{
 			purgeClosedConnections();
-			m_PurgeTimepoint = time(NULL) + PURGE_FREQ_SECS;
+			m_PurgeTimepoint = time(nullptr) + PURGE_FREQ_SECS;
 		}
 	}
 
@@ -78,7 +78,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 
 	// Ignore non-TCP packets
 	TcpLayer* tcpLayer = tcpData.getLayerOfType<TcpLayer>(true); // lookup in reverse order
-	if (tcpLayer == NULL)
+	if (tcpLayer == nullptr)
 	{
 		return NonTcpPacket;
 	}
@@ -108,7 +108,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 		return Ignore_PacketWithNoData;
 	}
 
-	TcpReassemblyData* tcpReassemblyData = NULL;
+	TcpReassemblyData* tcpReassemblyData = nullptr;
 
 	// calculate flow key for this packet
 	uint32_t flowKey = hash5Tuple(&tcpData);
@@ -134,7 +134,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 		m_ConnectionInfo[flowKey] = tcpReassemblyData->connData;
 
 		// fire connection start callback
-		if (m_OnConnStart != NULL)
+		if (m_OnConnStart != nullptr)
 			m_OnConnStart(tcpReassemblyData->connData, m_UserCookie);
 	}
 	else // connection already exists
@@ -240,7 +240,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 	{
 		PCPP_LOG_DEBUG("Got FIN or RST packet without data on side " << sideIndex);
 
-		handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+		handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 		return FIN_RSTWithNoData;
 	}
 
@@ -280,7 +280,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 			tcpReassemblyData->twoSides[sideIndex].sequence++;
 
 		// send data to the callback
-		if (tcpPayloadSize != 0 && m_OnMessageReadyCallback != NULL)
+		if (tcpPayloadSize != 0 && m_OnMessageReadyCallback != nullptr)
 		{
 			TcpStreamData streamData(tcpLayer->getLayerPayload(), tcpPayloadSize, 0, tcpReassemblyData->connData, timestampOfTheReceivedPacket);
 			m_OnMessageReadyCallback(sideIndex, streamData, m_UserCookie);
@@ -289,7 +289,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 
 		// handle case where this packet is FIN or RST (although it's unlikely)
 		if (isFinOrRst)
-			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 
 		// return - nothing else to do here
 		return status;
@@ -315,7 +315,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 			tcpReassemblyData->twoSides[sideIndex].sequence += tcpPayloadSize - newLength;
 
 			// send only the new data to the callback
-			if (m_OnMessageReadyCallback != NULL)
+			if (m_OnMessageReadyCallback != nullptr)
 			{
 				TcpStreamData streamData(tcpLayer->getLayerPayload() + newLength, tcpPayloadSize - newLength, 0, tcpReassemblyData->connData, timestampOfTheReceivedPacket);
 				m_OnMessageReadyCallback(sideIndex, streamData, m_UserCookie);
@@ -329,7 +329,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 
 		// handle case where this packet is FIN or RST
 		if (isFinOrRst)
-			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 
 		// return - nothing else to do here
 		return status;
@@ -346,7 +346,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 			// handle case where this packet is FIN or RST
 			if (isFinOrRst)
 			{
-				handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+				handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 				status = FIN_RSTWithNoData;
 			}
 			else
@@ -367,7 +367,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 			tcpReassemblyData->twoSides[sideIndex].sequence++;
 
 		// send the data to the callback
-		if (m_OnMessageReadyCallback != NULL)
+		if (m_OnMessageReadyCallback != nullptr)
 		{
 			TcpStreamData streamData(tcpLayer->getLayerPayload(), tcpPayloadSize, 0, tcpReassemblyData->connData,timestampOfTheReceivedPacket);
 			m_OnMessageReadyCallback(sideIndex, streamData, m_UserCookie);
@@ -379,7 +379,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 
 		// handle case where this packet is FIN or RST
 		if (isFinOrRst)
-			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 
 		// return - nothing else to do here
 		return status;
@@ -397,7 +397,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 			// handle case where this packet is FIN or RST
 			if (isFinOrRst)
 			{
-				handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+				handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 				status = FIN_RSTWithNoData;
 			}
 			else
@@ -430,7 +430,7 @@ TcpReassembly::ReassemblyStatus TcpReassembly::reassemblePacket(Packet& tcpData)
 		// handle case where this packet is FIN or RST
 		if (isFinOrRst)
 		{
-			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey);
+			handleFinOrRst(tcpReassemblyData, sideIndex, flowKey, isRst);
 		}
 
 		return status;
@@ -450,7 +450,7 @@ static std::string prepareMissingDataMessage(uint32_t missingDataLen)
 	return missingDataTextStream.str();
 }
 
-void TcpReassembly::handleFinOrRst(TcpReassemblyData* tcpReassemblyData, int8_t sideIndex, uint32_t flowKey)
+void TcpReassembly::handleFinOrRst(TcpReassemblyData* tcpReassemblyData, int8_t sideIndex, uint32_t flowKey, bool isRst)
 {
 	// if this side already saw a FIN or RST packet, do nothing and return
 	if (tcpReassemblyData->twoSides[sideIndex].gotFinOrRst)
@@ -461,12 +461,19 @@ void TcpReassembly::handleFinOrRst(TcpReassemblyData* tcpReassemblyData, int8_t 
 	// set FIN/RST flag for this side
 	tcpReassemblyData->twoSides[sideIndex].gotFinOrRst = true;
 
-	// check if the other side also sees FIN or RST packet. If so - close the flow. Otherwise - only clear the out-of-order packets for this side
+	// check if the other side also sees FIN or RST packet. If so - just close the flow. Otherwise - clear the out-of-order packets for this side
 	int otherSideIndex = 1 - sideIndex;
 	if (tcpReassemblyData->twoSides[otherSideIndex].gotFinOrRst)
+	{
 		closeConnectionInternal(flowKey, TcpReassembly::TcpReassemblyConnectionClosedByFIN_RST);
+		return;
+	}
 	else
 		checkOutOfOrderFragments(tcpReassemblyData, sideIndex, true);
+
+	// and if it's a rst, close the flow unilaterally
+	if(isRst)
+		closeConnectionInternal(flowKey, TcpReassembly::TcpReassemblyConnectionClosedByFIN_RST);
 }
 
 void TcpReassembly::checkOutOfOrderFragments(TcpReassemblyData* tcpReassemblyData, int8_t sideIndex, bool cleanWholeFragList)
@@ -496,13 +503,13 @@ void TcpReassembly::checkOutOfOrderFragments(TcpReassemblyData* tcpReassemblyDat
 				{
 					// update sequence
 					tcpReassemblyData->twoSides[sideIndex].sequence += curTcpFrag->dataLength;
-					if (curTcpFrag->data != NULL)
+					if (curTcpFrag->data != nullptr)
 					{
 						PCPP_LOG_DEBUG("Found an out-of-order packet matching to the current sequence with size " << curTcpFrag->dataLength << " on side " << sideIndex << ". Pulling it out of the list and sending the data to the callback");
 
 						// send new data to callback
 
-						if (m_OnMessageReadyCallback != NULL)
+						if (m_OnMessageReadyCallback != nullptr)
 						{
 							TcpStreamData streamData(curTcpFrag->data, curTcpFrag->dataLength, 0, tcpReassemblyData->connData, curTcpFrag->timestamp);
 							m_OnMessageReadyCallback(sideIndex, streamData, m_UserCookie);
@@ -537,7 +544,7 @@ void TcpReassembly::checkOutOfOrderFragments(TcpReassemblyData* tcpReassemblyDat
 						tcpReassemblyData->twoSides[sideIndex].sequence += curTcpFrag->dataLength - newLength;
 
 						// send only the new data to the callback
-						if (m_OnMessageReadyCallback != NULL)
+						if (m_OnMessageReadyCallback != nullptr)
 						{
 							TcpStreamData streamData(curTcpFrag->data + newLength, curTcpFrag->dataLength - newLength, 0, tcpReassemblyData->connData, curTcpFrag->timestamp);
 							m_OnMessageReadyCallback(sideIndex, streamData, m_UserCookie);
@@ -609,10 +616,10 @@ void TcpReassembly::checkOutOfOrderFragments(TcpReassemblyData* tcpReassemblyDat
 
 			// update sequence
 			tcpReassemblyData->twoSides[sideIndex].sequence = curTcpFrag->sequence + curTcpFrag->dataLength;
-			if (curTcpFrag->data != NULL)
+			if (curTcpFrag->data != nullptr)
 			{
 				// send new data to callback
-				if (m_OnMessageReadyCallback != NULL)
+				if (m_OnMessageReadyCallback != nullptr)
 				{
 					// prepare missing data text
 					std::string missingDataTextStr = prepareMissingDataMessage(missingDataLen);
@@ -672,7 +679,7 @@ void TcpReassembly::closeConnectionInternal(uint32_t flowKey, ConnectionEndReaso
 	PCPP_LOG_DEBUG("Calling checkOutOfOrderFragments on side 1");
 	checkOutOfOrderFragments(&tcpReassemblyData, 1, true);
 
-	if (m_OnConnEnd != NULL)
+	if (m_OnConnEnd != nullptr)
 		m_OnConnEnd(tcpReassemblyData.connData, reason, m_UserCookie);
 
 	tcpReassemblyData.closed = true; // mark the connection as closed
@@ -702,7 +709,7 @@ void TcpReassembly::closeAllConnections()
 		PCPP_LOG_DEBUG("Calling checkOutOfOrderFragments on side 1");
 		checkOutOfOrderFragments(&tcpReassemblyData, 1, true);
 
-		if (m_OnConnEnd != NULL)
+		if (m_OnConnEnd != nullptr)
 			m_OnConnEnd(tcpReassemblyData.connData, TcpReassemblyConnectionClosedManually, m_UserCookie);
 
 		tcpReassemblyData.closed = true; // mark the connection as closed
@@ -726,7 +733,7 @@ void TcpReassembly::insertIntoCleanupList(uint32_t flowKey)
 	// m_CleanupList is a map with key of type time_t (expiration time). The mapped type is a list that stores the flow keys to be cleared in certain point of time.
 	// m_CleanupList.insert inserts an empty list if the container does not already contain an element with an equivalent key,
 	// otherwise this method returns an iterator to the element that prevents insertion.
-	std::pair<CleanupList::iterator, bool> pair = m_CleanupList.insert(std::make_pair(time(NULL) + m_ClosedConnectionDelay, CleanupList::mapped_type()));
+	std::pair<CleanupList::iterator, bool> pair = m_CleanupList.insert(std::make_pair(time(nullptr) + m_ClosedConnectionDelay, CleanupList::mapped_type()));
 
 	// getting the reference to list
 	CleanupList::mapped_type& keysList = pair.first->second;
@@ -740,7 +747,7 @@ uint32_t TcpReassembly::purgeClosedConnections(uint32_t maxNumToClean)
 	if (maxNumToClean == 0)
 		maxNumToClean = m_MaxNumToClean;
 
-	CleanupList::iterator iterTime = m_CleanupList.begin(), iterTimeEnd = m_CleanupList.upper_bound(time(NULL));
+	CleanupList::iterator iterTime = m_CleanupList.begin(), iterTimeEnd = m_CleanupList.upper_bound(time(nullptr));
 	while (iterTime != iterTimeEnd && count < maxNumToClean)
 	{
 		CleanupList::mapped_type& keysList = iterTime->second;

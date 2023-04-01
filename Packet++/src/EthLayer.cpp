@@ -8,6 +8,7 @@
 #include "VlanLayer.h"
 #include "PPPoELayer.h"
 #include "MplsLayer.h"
+#include "WakeOnLanLayer.h"
 #include "EndianPortable.h"
 #include <string.h>
 
@@ -70,6 +71,11 @@ void EthLayer::parseNextLayer()
 	case PCPP_ETHERTYPE_MPLS:
 		m_NextLayer = new MplsLayer(payload, payloadLen, this, m_Packet);
 		break;
+	case PCPP_ETHERTYPE_WAKE_ON_LAN:
+		m_NextLayer = WakeOnLanLayer::isDataValid(payload, payloadLen)
+			? static_cast<Layer*>(new WakeOnLanLayer(payload, payloadLen, this, m_Packet))
+			: static_cast<Layer*>(new PayloadLayer(payload, payloadLen, this, m_Packet));
+		break;
 	default:
 		m_NextLayer = new PayloadLayer(payload, payloadLen, this, m_Packet);
 	}
@@ -77,7 +83,7 @@ void EthLayer::parseNextLayer()
 
 void EthLayer::computeCalculateFields()
 {
-	if (m_NextLayer == NULL)
+	if (m_NextLayer == nullptr)
 		return;
 
 	switch (m_NextLayer->getProtocol())

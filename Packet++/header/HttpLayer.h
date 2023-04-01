@@ -167,7 +167,7 @@ namespace pcpp
 		 * @param[in] uri The URI of the first line
 		 * @param[in] version HTTP version to be used in this request
 		 */
-		HttpRequestLayer(HttpMethod method, std::string uri, HttpVersion version);
+		HttpRequestLayer(HttpMethod method, const std::string& uri, HttpVersion version);
 
 		virtual ~HttpRequestLayer();
 
@@ -318,7 +318,7 @@ namespace pcpp
 			/** 417 Expectation Failed */
 			Http417ExpectationFailed,
 			/** 418 I'm a teapot */
-			Http418Imateapot,
+			Http418ImATeapot,
 			/** 419 Authentication Timeout */
 			Http419AuthenticationTimeout,
 			/** 420 (various messages) */
@@ -455,7 +455,7 @@ namespace pcpp
 		 * @param[in] prevFieldName Optional field, if specified and "Content-Length" field doesn't exist, it will be created after it
 		 * @return A pointer to the "Content-Length" field, or NULL if creation failed for some reason
 		 */
-		HeaderField* setContentLength(int contentLength, const std::string prevFieldName = "");
+		HeaderField* setContentLength(int contentLength, const std::string &prevFieldName = "");
 
 		/**
 		 * The length of the body of many HTTP response messages is determined by a HTTP header field called "Content-Length". This method
@@ -536,7 +536,7 @@ namespace pcpp
 		 * @param[in] dataLen The raw data length
 		 * @return The parsed HTTP method
 		 */
-		static HttpRequestLayer::HttpMethod parseMethod(char* data, size_t dataLen);
+		static HttpRequestLayer::HttpMethod parseMethod(const char* data, size_t dataLen);
 
 		/**
 		 * @return The size in bytes of the HTTP first line
@@ -561,7 +561,7 @@ namespace pcpp
 		{
 		public:
 			~HttpRequestFirstLineException() throw() {}
-			void setMessage(std::string message) { m_Message = message; }
+			void setMessage(const std::string &message) { m_Message = message; }
 			virtual const char* what() const throw()
 			{
 				return m_Message.c_str();
@@ -571,8 +571,7 @@ namespace pcpp
 		};
 	private:
 		HttpRequestFirstLine(HttpRequestLayer* httpRequest);
-		HttpRequestFirstLine(HttpRequestLayer* httpRequest, HttpRequestLayer::HttpMethod method, HttpVersion version, std::string uri = "/");
-			//throw(HttpRequestFirstLineException); // Deprecated in C++17
+		HttpRequestFirstLine(HttpRequestLayer* httpRequest, HttpRequestLayer::HttpMethod method, HttpVersion version, const std::string& uri = "/");
 
 		void parseVersion();
 
@@ -648,7 +647,15 @@ namespace pcpp
 		 * @param[in] dataLen The raw data length
 		 * @return The parsed HTTP status code as enum
 		 */
-		static HttpResponseLayer::HttpResponseStatusCode parseStatusCode(char* data, size_t dataLen);
+		static HttpResponseLayer::HttpResponseStatusCode parseStatusCode(const char* data, size_t dataLen);
+
+		/**
+		 * A static method for parsing the HTTP version out of raw first line data (e.g "HTTP/x.y")
+		 * @param[in] data The raw data
+		 * @param[in] dataLen The raw data length
+		 * @return The parsed HTTP status code as enum
+		 */
+		static HttpVersion parseVersion(const char* data, size_t dataLen);
 
 		/**
 		 * @return The size in bytes of the HTTP first line
@@ -673,7 +680,7 @@ namespace pcpp
 		{
 		public:
 			~HttpResponseFirstLineException() throw() {}
-			void setMessage(std::string message) { m_Message = message; }
+			void setMessage(const std::string &message) { m_Message = message; }
 			virtual const char* what() const throw()
 			{
 				return m_Message.c_str();
@@ -685,10 +692,6 @@ namespace pcpp
 	private:
 		HttpResponseFirstLine(HttpResponseLayer* httpResponse);
 		HttpResponseFirstLine(HttpResponseLayer* httpResponse,  HttpVersion version, HttpResponseLayer::HttpResponseStatusCode statusCode, std::string statusCodeString = "");
-
-		static HttpVersion parseVersion(char* data, size_t dataLen);
-		static HttpResponseLayer::HttpResponseStatusCode validateStatusCode(char* data, size_t dataLen, HttpResponseLayer::HttpResponseStatusCode potentialCode);
-
 
 		HttpResponseLayer* m_HttpResponse;
 		HttpVersion m_Version;

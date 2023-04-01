@@ -1,7 +1,10 @@
 #ifndef PCAPPP_KNI_DEVICE
 #define PCAPPP_KNI_DEVICE
 
+// GCOVR_EXCL_START
+
 #include <string>
+#include <atomic>
 
 #include "Device.h"
 #include "MacAddress.h"
@@ -48,7 +51,7 @@
  *    The problem is laying in DPDK in rte_kni_update_link function
  *    (it is DPDK BUG if rte_kni_update_link is __rte_experimental).
  *    It is recommended to load rte_kni.ko module with "carrier=on" DPDK
- *    default is "carrier=off", provided setup-dpdk.sh by default loads with
+ *    default is "carrier=off", provided setup_dpdk.py by default loads with
  *    "carrier=on" if Your DPDK version supports it. The good indication of
  *    this issue are "DPDK KNI Failed to update links state for device"
  *    messages when Pcap++Test application is being run.
@@ -632,7 +635,7 @@ namespace pcpp
 			void* userCookie;
 			KniThread* thread;
 
-			static void* runCapture(void* devicePointer);
+			static void runCapture(void* devicePointer, std::atomic<bool>& stopThread);
 			inline bool isRunning() const { return thread != NULL; }
 			void cleanup();
 		} m_Capturing;
@@ -642,10 +645,13 @@ namespace pcpp
 			long sleepNs;
 			KniThread* thread;
 
-			static void* runRequests(void* devicePointer);
+			static void runRequests(void* devicePointer, std::atomic<bool>& stopThread);
 			void cleanup();
 		} m_Requests;
 	};
 
 } // namespace pcpp
+
+// GCOVR_EXCL_STOP
+
 #endif /* PCAPPP_KNI_DEVICE */

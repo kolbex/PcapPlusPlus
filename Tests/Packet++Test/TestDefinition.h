@@ -3,6 +3,7 @@
 #include "PcppTestFramework.h"
 
 // Implemented in EthAndArpTests.cpp
+PTF_TEST_CASE(OUILookup);
 PTF_TEST_CASE(EthPacketCreation);
 PTF_TEST_CASE(EthPacketPointerCreation);
 PTF_TEST_CASE(EthAndArpPacketParsing);
@@ -58,9 +59,12 @@ PTF_TEST_CASE(ResizeLayerTest);
 PTF_TEST_CASE(PrintPacketAndLayers);
 
 // Implemented in HttpTests.cpp
+PTF_TEST_CASE(HttpRequestParseMethodTest);
 PTF_TEST_CASE(HttpRequestLayerParsingTest);
 PTF_TEST_CASE(HttpRequestLayerCreationTest);
 PTF_TEST_CASE(HttpRequestLayerEditTest);
+PTF_TEST_CASE(HttpResponseParseStatusCodeTest);
+PTF_TEST_CASE(HttpResponseParseVersionTest);
 PTF_TEST_CASE(HttpResponseLayerParsingTest);
 PTF_TEST_CASE(HttpResponseLayerCreationTest);
 PTF_TEST_CASE(HttpResponseLayerEditTest);
@@ -91,6 +95,9 @@ PTF_TEST_CASE(SllPacketParsingTest);
 PTF_TEST_CASE(SllPacketCreationTest);
 PTF_TEST_CASE(NullLoopbackTest);
 
+// Implemented in NflogTests.cpp
+PTF_TEST_CASE(NflogPacketParsingTest);
+
 // Implemented in GreTests.cpp
 PTF_TEST_CASE(GreParsingTest);
 PTF_TEST_CASE(GreCreationTest);
@@ -110,6 +117,7 @@ PTF_TEST_CASE(SSLMultipleRecordParsingTest);
 PTF_TEST_CASE(SSLMultipleRecordParsing2Test);
 PTF_TEST_CASE(SSLMultipleRecordParsing3Test);
 PTF_TEST_CASE(SSLMultipleRecordParsing4Test);
+PTF_TEST_CASE(SSLMultipleRecordParsing5Test);
 PTF_TEST_CASE(SSLPartialCertificateParseTest);
 PTF_TEST_CASE(SSLNewSessionTicketParseTest);
 PTF_TEST_CASE(SSLMalformedPacketParsing);
@@ -126,9 +134,12 @@ PTF_TEST_CASE(Igmpv3QueryCreateAndEditTest);
 PTF_TEST_CASE(Igmpv3ReportCreateAndEditTest);
 
 // Implemented in SipSdpTests.cpp
+PTF_TEST_CASE(SipRequestParseMethodTest);
 PTF_TEST_CASE(SipRequestLayerParsingTest);
 PTF_TEST_CASE(SipRequestLayerCreationTest);
 PTF_TEST_CASE(SipRequestLayerEditTest);
+PTF_TEST_CASE(SipResponseParseStatusCodeTest);
+PTF_TEST_CASE(SipResponseParseVersionCodeTest);
 PTF_TEST_CASE(SipResponseLayerParsingTest);
 PTF_TEST_CASE(SipResponseLayerCreationTest);
 PTF_TEST_CASE(SipResponseLayerEditTest);
@@ -167,8 +178,56 @@ PTF_TEST_CASE(DhcpV6EditTest);
 PTF_TEST_CASE(NtpMethodsTests);
 PTF_TEST_CASE(NtpParsingV3Tests);
 PTF_TEST_CASE(NtpParsingV4Tests);
-PTF_TEST_CASE(NtpCraftingTests);
+PTF_TEST_CASE(NtpCreationTests);
 
 // Implemented in TelnetTests.cpp
 PTF_TEST_CASE(TelnetCommandParsingTests);
 PTF_TEST_CASE(TelnetDataParsingTests);
+
+// Implemented in IcmpV6Tests.cpp
+PTF_TEST_CASE(IcmpV6ParsingTest);
+PTF_TEST_CASE(IcmpV6CreationTest);
+PTF_TEST_CASE(IcmpV6EditTest);
+
+// Implemented in FtpTests.cpp
+PTF_TEST_CASE(FtpParsingTests);
+PTF_TEST_CASE(FtpCreationTests);
+PTF_TEST_CASE(FtpEditTests);
+
+// Implemented in LLCTests.cpp
+PTF_TEST_CASE(LLCParsingTests);
+PTF_TEST_CASE(LLCCreationTests);
+
+// Implemented in StpTests.cpp
+PTF_TEST_CASE(StpConfigurationParsingTests);
+PTF_TEST_CASE(StpConfigurationCreationTests);
+PTF_TEST_CASE(StpConfigurationEditTests);
+PTF_TEST_CASE(StpTopologyChangeParsingTests);
+PTF_TEST_CASE(StpTopologyChangeCreationTests);
+PTF_TEST_CASE(StpTopologyChangeEditTests);
+PTF_TEST_CASE(RapidStpParsingTests);
+PTF_TEST_CASE(RapidStpCreationTests);
+PTF_TEST_CASE(RapidStpEditTests);
+PTF_TEST_CASE(MultipleStpParsingTests);
+PTF_TEST_CASE(MultipleStpCreationTests);
+PTF_TEST_CASE(MultipleStpEditTests);
+
+// Implemented in SomeIpTests.cpp
+PTF_TEST_CASE(SomeIpPortTest);
+PTF_TEST_CASE(SomeIpParsingTest);
+PTF_TEST_CASE(SomeIpCreationTest);
+PTF_TEST_CASE(SomeIpTpParsingTest);
+PTF_TEST_CASE(SomeIpTpCreationTest);
+PTF_TEST_CASE(SomeIpTpEditTest);
+
+// Implemented in SomeIpSdTests.cpp
+PTF_TEST_CASE(SomeIpSdParsingTest);
+PTF_TEST_CASE(SomeIpSdCreationTest);
+
+// Implemented in WakeOnLanTests.cpp
+PTF_TEST_CASE(WakeOnLanParsingTests);
+PTF_TEST_CASE(WakeOnLanCreationTests);
+PTF_TEST_CASE(WakeOnLanEditTests);
+
+// Implemented in TpktTests.cpp
+PTF_TEST_CASE(TpktLayerTest);

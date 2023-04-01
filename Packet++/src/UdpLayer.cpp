@@ -13,6 +13,8 @@
 #include "RadiusLayer.h"
 #include "GtpLayer.h"
 #include "NtpLayer.h"
+#include "SomeIpLayer.h"
+#include "WakeOnLanLayer.h"
 #include "PacketUtils.h"
 #include "Logger.h"
 #include <string.h>
@@ -49,7 +51,7 @@ uint16_t UdpLayer::calculateChecksum(bool writeResultToPacket)
 	uint16_t checksumRes = 0;
 	uint16_t currChecksumValue = udpHdr->headerChecksum;
 
-	if (m_PrevLayer != NULL)
+	if (m_PrevLayer != nullptr)
 	{
 		udpHdr->headerChecksum = 0;
 		ScalarBuffer<uint16_t> vec[2];
@@ -133,6 +135,10 @@ void UdpLayer::parseNextLayer()
 		m_NextLayer = new DhcpV6Layer(udpData, udpDataLen, this, m_Packet);
 	else if ((NtpLayer::isNTPPort(portSrc) || NtpLayer::isNTPPort(portDst)) && NtpLayer::isDataValid(udpData, udpDataLen))
 		m_NextLayer = new NtpLayer(udpData, udpDataLen, this, m_Packet);
+	else if (SomeIpLayer::isSomeIpPort(portSrc) || SomeIpLayer::isSomeIpPort(portDst))
+		m_NextLayer = SomeIpLayer::parseSomeIpLayer(udpData, udpDataLen, this, m_Packet);
+	else if ((WakeOnLanLayer::isWakeOnLanPort(portDst) && WakeOnLanLayer::isDataValid(udpData, udpDataLen)))
+		m_NextLayer = new WakeOnLanLayer(udpData, udpDataLen, this, m_Packet);
 	else
 		m_NextLayer = new PayloadLayer(udpData, udpDataLen, this, m_Packet);
 }

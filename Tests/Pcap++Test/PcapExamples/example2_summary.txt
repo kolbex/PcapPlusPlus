@@ -161,35 +161,41 @@ ICMP Layer, Echo (ping) reply (type: 0)
 Packet length: 375 [Bytes], Arrival time: 2010-06-29 19:41:50.969363000
 Ethernet II Layer, Src: 00:13:c3:df:ae:18, Dst: 01:00:0c:cd:cd:d0
 VLAN Layer, Priority: 5, Vlan ID: 118, CFI: 0
-Payload Layer, Data length: 357 [Bytes]
+Logical Link Control
+Payload Layer, Data length: 354 [Bytes]
 
 
 Packet length: 373 [Bytes], Arrival time: 2010-06-29 19:41:51.384783000
 Ethernet II Layer, Src: 00:19:aa:7d:e6:88, Dst: 01:00:0c:cd:cd:d0
 VLAN Layer, Priority: 5, Vlan ID: 209, CFI: 0
-Payload Layer, Data length: 355 [Bytes]
+Logical Link Control
+Payload Layer, Data length: 352 [Bytes]
 
 
 Packet length: 375 [Bytes], Arrival time: 2010-06-29 19:42:05.369320000
 IEEE 802.3 Ethernet, Src: 00:0f:34:5f:16:8d, Dst: 01:00:0c:cc:cc:cc
-Payload Layer, Data length: 361 [Bytes]
+Logical Link Control
+Payload Layer, Data length: 358 [Bytes]
 
 
 Packet length: 375 [Bytes], Arrival time: 2010-06-29 19:42:05.404193000
 IEEE 802.3 Ethernet, Src: 00:13:c4:12:0f:0d, Dst: 01:00:0c:cc:cc:cc
-Payload Layer, Data length: 361 [Bytes]
+Logical Link Control
+Payload Layer, Data length: 358 [Bytes]
 
 
 Packet length: 375 [Bytes], Arrival time: 2010-06-29 19:42:08.106320000
 Ethernet II Layer, Src: 00:1b:d4:1b:a4:d8, Dst: 01:00:0c:cd:cd:d0
 VLAN Layer, Priority: 5, Vlan ID: 118, CFI: 0
-Payload Layer, Data length: 357 [Bytes]
+Logical Link Control
+Payload Layer, Data length: 354 [Bytes]
 
 
 Packet length: 373 [Bytes], Arrival time: 2010-06-29 19:42:10.538713000
 Ethernet II Layer, Src: 00:21:55:c8:f1:3c, Dst: 01:00:0c:cd:cd:d0
 VLAN Layer, Priority: 5, Vlan ID: 209, CFI: 0
-Payload Layer, Data length: 355 [Bytes]
+Logical Link Control
+Payload Layer, Data length: 352 [Bytes]
 
 
 Packet length: 60 [Bytes], Arrival time: 2015-01-03 13:04:42.319404000
@@ -453,7 +459,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 173.194.78.104
 TCP Layer, [ACK], Src port: 55194, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 79 [Bytes], Arrival time: 2015-01-03 13:04:55.562799000
@@ -535,7 +541,7 @@ IPv4 Layer, Src: 173.194.78.104, Dst: 10.0.0.1
 TCP Layer, [ACK], Src port: 443, Dst port: 55194
 TLS 1.2 Layer, Handshake: New Session Ticket message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 111 [Bytes], Arrival time: 2015-01-03 13:04:55.668279000
@@ -5556,7 +5562,7 @@ Ethernet II Layer, Src: 6c:f0:49:b2:de:6e, Dst: 30:46:9a:23:fb:fa
 IPv4 Layer, Src: 10.0.0.1, Dst: 31.13.93.3
 TCP Layer, [ACK], Src port: 55232, Dst port: 443
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 85 [Bytes], Arrival time: 2015-01-03 13:04:59.935542000
@@ -25858,7 +25864,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 64.233.166.94
 TCP Layer, [ACK], Src port: 55304, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 413 [Bytes], Arrival time: 2015-01-03 13:05:16.264718000
@@ -26331,7 +26337,7 @@ IPv4 Layer, Src: 64.233.166.94, Dst: 10.0.0.1
 TCP Layer, [ACK], Src port: 443, Dst port: 55304
 TLS 1.2 Layer, Handshake: New Session Ticket message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 111 [Bytes], Arrival time: 2015-01-03 13:05:16.369554000
@@ -26863,7 +26869,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 212.199.219.221
 TCP Layer, [ACK], Src port: 55305, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 119 [Bytes], Arrival time: 2015-01-03 13:05:16.847325000
@@ -27685,7 +27691,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 212.199.219.227
 TCP Layer, [ACK], Src port: 55306, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, New Session Ticket message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 119 [Bytes], Arrival time: 2015-01-03 13:05:17.165635000
@@ -27708,7 +27714,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 212.199.219.226
 TCP Layer, [ACK], Src port: 55307, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 54 [Bytes], Arrival time: 2015-01-03 13:05:17.175505000
@@ -29390,7 +29396,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 173.194.115.255
 TCP Layer, [ACK], Src port: 55308, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 119 [Bytes], Arrival time: 2015-01-03 13:05:20.727295000
@@ -29461,7 +29467,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 212.199.219.227
 TCP Layer, [ACK], Src port: 55309, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 119 [Bytes], Arrival time: 2015-01-03 13:05:20.759724000
@@ -29578,7 +29584,7 @@ IPv4 Layer, Src: 10.0.0.1, Dst: 212.199.219.226
 TCP Layer, [ACK], Src port: 55310, Dst port: 443
 TLS 1.2 Layer, Handshake: Client Key Exchange message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Client Key Exchange message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 119 [Bytes], Arrival time: 2015-01-03 13:05:20.805697000
@@ -29825,7 +29831,7 @@ IPv4 Layer, Src: 173.194.115.255, Dst: 10.0.0.1
 TCP Layer, [ACK], Src port: 443, Dst port: 55308
 TLS 1.2 Layer, Handshake: New Session Ticket message
 TLS 1.2 Layer, Change Cipher Spec
-TLS 1.2 Layer, Handshake: Hello Request message, Hello Request message, Unknown message
+TLS 1.2 Layer, Handshake: Unknown message
 
 
 Packet length: 111 [Bytes], Arrival time: 2015-01-03 13:05:20.963951000

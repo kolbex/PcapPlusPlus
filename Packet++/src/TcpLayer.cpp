@@ -12,6 +12,9 @@
 #include "SSHLayer.h"
 #include "DnsLayer.h"
 #include "TelnetLayer.h"
+#include "TpktLayer.h"
+#include "FtpLayer.h"
+#include "SomeIpLayer.h"
 #include "PacketUtils.h"
 #include "Logger.h"
 #include <string.h>
@@ -31,11 +34,11 @@ TcpOptionBuilder::TcpOptionBuilder(NopEolOptionTypes optionType)
 	switch (optionType)
 	{
 	case EOL:
-		init((uint8_t)PCPP_TCPOPT_EOL, NULL, 0);
+		init((uint8_t)PCPP_TCPOPT_EOL, nullptr, 0);
 		break;
 	case NOP:
 	default:
-		init((uint8_t)PCPP_TCPOPT_NOP, NULL, 0);
+		init((uint8_t)PCPP_TCPOPT_NOP, nullptr, 0);
 		break;
 	}
 }
@@ -50,7 +53,7 @@ TcpOption TcpOptionBuilder::build() const
 		if (m_RecValueLen != 0)
 		{
 			PCPP_LOG_ERROR("TCP NOP and TCP EOL options are 1-byte long and don't have option value. Tried to set option value of size " << m_RecValueLen);
-			return TcpOption(NULL);
+			return TcpOption(nullptr);
 		}
 
 		optionSize = 1;
@@ -62,7 +65,7 @@ TcpOption TcpOptionBuilder::build() const
 	if (optionSize > 1)
 	{
 		recordBuffer[1] = static_cast<uint8_t>(optionSize);
-		if (optionSize > 2 && m_RecValue != NULL)
+		if (optionSize > 2 && m_RecValue != nullptr)
 			memcpy(recordBuffer+2, m_RecValue, m_RecValueLen);
 	}
 
@@ -99,7 +102,7 @@ TcpOption TcpLayer::getNextTcpOption(TcpOption& tcpOption) const
 {
 	TcpOption nextOpt = m_OptionReader.getNextTLVRecord(tcpOption, getOptionsBasePtr(), getHeaderLen() - sizeof(tcphdr));
 	if (nextOpt.isNotNull() && nextOpt.getType() == TCPOPT_DUMMY)
-		return TcpOption(NULL);
+		return TcpOption(nullptr);
 
 	return nextOpt;
 }
@@ -128,7 +131,7 @@ TcpOption TcpLayer::addTcpOptionAfter(const TcpOptionBuilder& optionBuilder, Tcp
 		if (prevOpt.isNull())
 		{
 			PCPP_LOG_ERROR("Previous option of type " << (int)prevOptionType << " not found, cannot add a new TCP option");
-			return TcpOption(NULL);
+			return TcpOption(nullptr);
 		}
 
 		offset = prevOpt.getRecordBasePtr() + prevOpt.getTotalSize() - m_Data;
@@ -205,7 +208,7 @@ TcpOption TcpLayer::addTcpOptionAt(const TcpOptionBuilder& optionBuilder, int of
 	{
 		PCPP_LOG_ERROR("Could not extend TcpLayer in [" << sizeToExtend << "] bytes");
 		newOption.purgeRecordData();
-		return TcpOption(NULL);
+		return TcpOption(nullptr);
 	}
 
 	memcpy(m_Data + offset, newOption.getRecordBasePtr(), newOption.getTotalSize());
@@ -228,7 +231,7 @@ void TcpLayer::adjustTcpOptionTrailer(size_t totalOptSize)
 		newNumberOfTrailingBytes++;
 
 	if (newNumberOfTrailingBytes < m_NumOfTrailingBytes)
-		shortenLayer(sizeof(tcphdr)+totalOptSize, m_NumOfTrailingBytes - newNumberOfTrailingBytes);
+		shortenLayer(sizeof(tcphdr)+totalOptSize, m_NumOfTrailingBytes - newNumberOfTrailingBytes - 1);
 	else if (newNumberOfTrailingBytes > m_NumOfTrailingBytes)
 		extendLayer(sizeof(tcphdr)+totalOptSize, newNumberOfTrailingBytes - m_NumOfTrailingBytes);
 
@@ -246,7 +249,7 @@ uint16_t TcpLayer::calculateChecksum(bool writeResultToPacket)
 	uint16_t checksumRes = 0;
 	uint16_t currChecksumValue = tcpHdr->headerChecksum;
 
-	if (m_PrevLayer != NULL)
+	if (m_PrevLayer != nullptr)
 	{
 		tcpHdr->headerChecksum = 0;
 		ScalarBuffer<uint16_t> vec[2];
@@ -355,11 +358,11 @@ void TcpLayer::parseNextLayer()
 
 	if (HttpMessage::isHttpPort(portDst) && HttpRequestFirstLine::parseMethod((char*)payload, payloadLen) != HttpRequestLayer::HttpMethodUnknown)
 		m_NextLayer = new HttpRequestLayer(payload, payloadLen, this, m_Packet);
-	else if (HttpMessage::isHttpPort(portSrc) && HttpResponseFirstLine::parseStatusCode((char*)payload, payloadLen) != HttpResponseLayer::HttpStatusCodeUnknown)
+	else if (HttpMessage::isHttpPort(portSrc) && HttpResponseFirstLine::parseVersion((char*)payload, payloadLen) != HttpVersion::HttpVersionUnknown && HttpResponseFirstLine::parseStatusCode((char*)payload, payloadLen) != HttpResponseLayer::HttpStatusCodeUnknown)
 		m_NextLayer = new HttpResponseLayer(payload, payloadLen, this, m_Packet);
 	else if (SSLLayer::IsSSLMessage(portSrc, portDst, payload, payloadLen))
 		m_NextLayer = SSLLayer::createSSLMessage(payload, payloadLen, this, m_Packet);
-	else if (SipLayer::isSipPort(portDst))
+	else if (SipLayer::isSipPort(portDst) || SipLayer::isSipPort(portSrc))
 	{
 		if (SipRequestFirstLine::parseMethod((char*)payload, payloadLen) != SipRequestLayer::SipMethodUnknown)
 			m_NextLayer = new SipRequestLayer(payload, payloadLen, this, m_Packet);
@@ -369,13 +372,25 @@ void TcpLayer::parseNextLayer()
 			m_NextLayer = new PayloadLayer(payload, payloadLen, this, m_Packet);
 	}
 	else if (BgpLayer::isBgpPort(portSrc, portDst))
+	{
 		m_NextLayer = BgpLayer::parseBgpLayer(payload, payloadLen, this, m_Packet);
+		if (!m_NextLayer)
+			m_NextLayer = new PayloadLayer(payload, payloadLen, this, m_Packet);
+	}
 	else if (SSHLayer::isSSHPort(portSrc, portDst))
 		m_NextLayer = SSHLayer::createSSHMessage(payload, payloadLen, this, m_Packet);
 	else if (DnsLayer::isDataValid(payload, payloadLen, true) && (DnsLayer::isDnsPort(portDst) || DnsLayer::isDnsPort(portSrc)))
 		m_NextLayer = new DnsOverTcpLayer(payload, payloadLen, this, m_Packet);
 	else if (TelnetLayer::isDataValid(payload, payloadLen) && (TelnetLayer::isTelnetPort(portDst) || TelnetLayer::isTelnetPort(portSrc)))
 		m_NextLayer = new TelnetLayer(payload, payloadLen, this, m_Packet);
+	else if (FtpLayer::isFtpPort(portSrc) && FtpLayer::isDataValid(payload, payloadLen))
+		m_NextLayer = new FtpResponseLayer(payload, payloadLen, this, m_Packet);
+	else if (FtpLayer::isFtpPort(portDst) && FtpLayer::isDataValid(payload, payloadLen))
+		m_NextLayer = new FtpRequestLayer(payload, payloadLen, this, m_Packet);
+	else if (SomeIpLayer::isSomeIpPort(portSrc) || SomeIpLayer::isSomeIpPort(portDst))
+		m_NextLayer = SomeIpLayer::parseSomeIpLayer(payload, payloadLen, this, m_Packet);
+	else if (TpktLayer::isDataValid(payload, payloadLen) && TpktLayer::isTpktPort(portSrc, portDst))
+		m_NextLayer =  new TpktLayer(payload, payloadLen, this, m_Packet);
 	else
 		m_NextLayer = new PayloadLayer(payload, payloadLen, this, m_Packet);
 }

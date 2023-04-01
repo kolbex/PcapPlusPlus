@@ -39,13 +39,13 @@ uint8_t* AuthenticationHeaderLayer::getICVBytes() const
 	size_t icvLength = getICVLength();
 	if (icvLength > 0)
 		return m_Data + sizeof(ipsec_authentication_header);
-	return NULL;
+	return nullptr;
 }
 
 std::string AuthenticationHeaderLayer::getICVHexStream() const
 {
 	uint8_t* bytes = getICVBytes();
-	if (bytes == NULL)
+	if (bytes == nullptr)
 		return "";
 
 	return byteArrayToHexString(bytes, getICVLength());
@@ -74,9 +74,9 @@ void AuthenticationHeaderLayer::parseNextLayer()
 	case PACKETPP_IPPROTO_IPIP:
 	{
 		uint8_t ipVersion = *payload >> 4;
-		if (ipVersion == 4)
+		if (ipVersion == 4 && IPv4Layer::isDataValid(payload, payloadLen))
 			m_NextLayer = new IPv4Layer(payload, payloadLen, this, m_Packet);
-		else if (ipVersion == 6)
+		else if (ipVersion == 6 && IPv6Layer::isDataValid(payload, payloadLen))
 			m_NextLayer = new IPv6Layer(payload, payloadLen, this, m_Packet);
 		else
 			m_NextLayer = new PayloadLayer(payload, payloadLen, this, m_Packet);

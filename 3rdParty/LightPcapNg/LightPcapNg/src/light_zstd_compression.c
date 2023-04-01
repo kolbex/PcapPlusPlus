@@ -26,9 +26,10 @@
 #include "light_zstd_compression.h"
 #include "light_compression_functions.h"
 #include "light_file.h"
-#include <stdlib.h>
-#include <memory.h>
 #include <assert.h>
+#include <memory.h>
+#include <stdlib.h>
+#include <string.h>
 
 _compression_t * (*get_compression_context_ptr)(int) = &get_zstd_compression_context;
 void(*free_compression_context_ptr)(_compression_t*) = &free_zstd_compression_context;
@@ -110,12 +111,14 @@ void free_zstd_decompression_context(_decompression_t* context)
 
 int is_zstd_compressed_file(const char* file_path)
 {
-	if (strstr(file_path, ".zstd"))
+	if (strstr(file_path, ".zst")) // good for .zst and .zstd extensions
 	{
 		return 1;
 	}
 	else
+	{
 		return 0;
+	}
 }
 
 size_t read_zstd_compressed(light_file fd, void *buf, size_t count)

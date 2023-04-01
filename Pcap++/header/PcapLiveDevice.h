@@ -2,12 +2,14 @@
 #ifndef PCAPPP_LIVE_DEVICE
 #define PCAPPP_LIVE_DEVICE
 
-#include "PcapDevice.h"
+#include <atomic>
 #include <vector>
 #include <string.h>
 #include <thread>
+
 #include "IpAddress.h"
 #include "Packet.h"
+#include "PcapDevice.h"
 
 // forward declarations for structs and typedefs that are defined in pcap.h
 struct pcap_if;
@@ -96,7 +98,7 @@ namespace pcpp
 		bool m_CaptureThreadStarted;
 		std::thread m_StatsThread;
 		bool m_StatsThreadStarted;
-		bool m_StopThread;
+		std::atomic<bool> m_StopThread;
 		OnPacketArrivesCallback m_cbOnPacketArrives;
 		void* m_cbOnPacketArrivesUserCookie;
 		OnStatsUpdateCallback m_cbOnStatsUpdate;
@@ -223,7 +225,7 @@ namespace pcpp
 			 * captured with USBPcap (> 131072, < 262144). A snapshot length of 65535 should be sufficient, on most if not all networks,
 			 * to capture all the data available from the packet.
 			*/
-			DeviceConfiguration(DeviceMode mode = Promiscuous, int packetBufferTimeoutMs = 0, int packetBufferSize = 0,
+			explicit DeviceConfiguration(DeviceMode mode = Promiscuous, int packetBufferTimeoutMs = 0, int packetBufferSize = 0,
 				                PcapDirection direction = PCPP_INOUT, int snapshotLength = 0)
 			{
 				this->mode = mode;
@@ -285,6 +287,12 @@ namespace pcpp
 		 * If no IPv4 addresses are defined, a zeroed IPv4 address (IPv4Address#Zero) will be returned
 		 */
 		IPv4Address getIPv4Address() const;
+
+		/**
+		 * @return The IPv6 address for this interface. If multiple IPv6 addresses are defined for this interface, the first will be picked.
+		 * If no IPv6 addresses are defined, a zeroed IPv6 address (IPv6Address#Zero) will be returned
+		 */
+		IPv6Address getIPv6Address() const;
 
 		/**
 		 * @return The default gateway defined for this interface. If no default gateway is defined, if it's not IPv4 or if couldn't extract

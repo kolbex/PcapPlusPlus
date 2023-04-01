@@ -1,5 +1,7 @@
 #ifdef USE_DPDK
 
+// GCOVR_EXCL_START
+
 #define LOG_MODULE PcapLogModuleDpdkDevice
 
 #define __STDC_LIMIT_MACROS
@@ -40,6 +42,14 @@
 #include <algorithm>
 #include <unistd.h>
 
+#if (RTE_VER_YEAR < 21) || (RTE_VER_YEAR == 21 && RTE_VER_MONTH < 11)
+#define GET_MASTER_CORE rte_get_master_lcore
+#define MASTER_LCORE "--master-lcore"
+#else
+#define GET_MASTER_CORE rte_get_main_lcore
+#define MASTER_LCORE "--main-lcore"
+#endif
+
 namespace pcpp
 {
 
@@ -62,7 +72,7 @@ DpdkDeviceList::~DpdkDeviceList()
 	m_DpdkDeviceList.clear();
 }
 
-bool DpdkDeviceList::initDpdk(CoreMask coreMask, uint32_t mBufPoolSizePerDevice, uint8_t masterCore, uint32_t initDpdkArgc, char **initDpdkArgv)
+bool DpdkDeviceList::initDpdk(CoreMask coreMask, uint32_t mBufPoolSizePerDevice, uint8_t masterCore, uint32_t initDpdkArgc, char **initDpdkArgv, const std::string& appName)
 {
 	char **initDpdkArgvBuffer;
 
@@ -92,12 +102,12 @@ bool DpdkDeviceList::initDpdk(CoreMask coreMask, uint32_t mBufPoolSizePerDevice,
 
 
 	std::stringstream dpdkParamsStream;
-	dpdkParamsStream << "pcapplusplusapp ";
+	dpdkParamsStream << appName << " ";
 	dpdkParamsStream << "-n ";
 	dpdkParamsStream << "2 ";
 	dpdkParamsStream << "-c ";
 	dpdkParamsStream << "0x" << std::hex << std::setw(2) << std::setfill('0') << coreMask << " ";
-	dpdkParamsStream << "--master-lcore ";
+	dpdkParamsStream << MASTER_LCORE << " ";
 	dpdkParamsStream << (int)masterCore << " ";
 
 	uint32_t i = 0;
@@ -115,7 +125,7 @@ bool DpdkDeviceList::initDpdk(CoreMask coreMask, uint32_t mBufPoolSizePerDevice,
 	while (dpdkParamsStream.good() && i < initDpdkArgc)
 	{
 		dpdkParamsStream >> dpdkParamsArray[i];
-		initDpdkArgvBuffer[i] = new char[dpdkParamsArray[i].length()];
+		initDpdkArgvBuffer[i] = new char[dpdkParamsArray[i].length() + 1];
 		strcpy(initDpdkArgvBuffer[i], dpdkParamsArray[i].c_str());
 		i++;
 	}
@@ -270,7 +280,7 @@ bool DpdkDeviceList::verifyHugePagesAndDpdkDriver()
 
 SystemCore DpdkDeviceList::getDpdkMasterCore() const
 {
-	return SystemCores::IdToSystemCore[rte_get_master_lcore()];
+	return SystemCores::IdToSystemCore[GET_MASTER_CORE()];
 }
 
 void DpdkDeviceList::setDpdkLogLevel(Logger::LogLevel logLevel)
@@ -412,5 +422,7 @@ void DpdkDeviceList::stopDpdkWorkerThreads()
 }
 
 } // namespace pcpp
+
+// GCOVR_EXCL_STOP
 
 #endif /* USE_DPDK */

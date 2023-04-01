@@ -3,6 +3,7 @@
 #include "Packet.h"
 #include "PcapFileDevice.h"
 #include "../Common/PcapFileNamesDef.h"
+#include <fstream>
 
 
 class FileReaderTeardown
@@ -11,14 +12,14 @@ private:
 	pcpp::IFileReaderDevice* m_Reader;
 
 public:
-	FileReaderTeardown(pcpp::IFileReaderDevice* reader)
+	explicit FileReaderTeardown(pcpp::IFileReaderDevice* reader)
 	{
 		m_Reader = reader;
 	}
 
 	~FileReaderTeardown()
 	{
-		if (m_Reader != NULL)
+		if (m_Reader != nullptr)
 		{
 			delete m_Reader;
 		}
@@ -76,6 +77,7 @@ PTF_TEST_CASE(TestPcapFileReadWrite)
 	PTF_ASSERT_EQUAL((uint32_t)writerStatistics.packetsRecv, 4631);
 	PTF_ASSERT_EQUAL((uint32_t)writerStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 4631);
 	PTF_ASSERT_EQUAL(ethCount, 4631);
 	PTF_ASSERT_EQUAL(sllCount, 0);
 	PTF_ASSERT_EQUAL(ipCount, 4631);
@@ -145,6 +147,7 @@ PTF_TEST_CASE(TestPcapSllFileReadWrite)
 	PTF_ASSERT_EQUAL((uint32_t)writerStatistics.packetsRecv, 518);
 	PTF_ASSERT_EQUAL((uint32_t)writerStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 518);
 	PTF_ASSERT_EQUAL(ethCount, 0);
 	PTF_ASSERT_EQUAL(sllCount, 518);
 	PTF_ASSERT_EQUAL(ipCount, 510);
@@ -211,6 +214,7 @@ PTF_TEST_CASE(TestPcapRawIPFileReadWrite)
 	PTF_ASSERT_EQUAL((uint32_t)writerNgStatistics.packetsRecv, 100);
 	PTF_ASSERT_EQUAL((uint32_t)writerNgStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 100);
 	PTF_ASSERT_EQUAL(ethCount, 0);
 	PTF_ASSERT_EQUAL(ipv4Count, 50);
 	PTF_ASSERT_EQUAL(ipv6Count, 50);
@@ -335,6 +339,7 @@ PTF_TEST_CASE(TestPcapNgFileReadWrite)
 	PTF_ASSERT_EQUAL((uint32_t)writerStatistics.packetsRecv, 64);
 	PTF_ASSERT_EQUAL((uint32_t)writerStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 64);
 	PTF_ASSERT_EQUAL(ethLinkLayerCount, 62);
 	PTF_ASSERT_EQUAL(nullLinkLayerCount, 2);
 	PTF_ASSERT_EQUAL(otherLinkLayerCount, 0);
@@ -485,7 +490,6 @@ PTF_TEST_CASE(TestPcapNgFileReadWriteAdv)
 
 	pcpp::RawPacket rawPacket2,rawPacketCompress;
 
-	int packet_count = 0;
 	while (readerDev2.getNextPacket(rawPacket, pktComment))
 	{
 		packetCount++;
@@ -569,7 +573,6 @@ PTF_TEST_CASE(TestPcapNgFileReadWriteAdv)
 			uint64_t timeDiff = (uint64_t)(packet1_timestamp.tv_nsec - packetCompress_timestamp.tv_nsec);
 			PTF_ASSERT_LOWER_THAN(timeDiff, 100000);
 		}
-		packet_count++;
 	}
 
 	PTF_ASSERT_EQUAL(packetCount, 159);
@@ -610,6 +613,13 @@ PTF_TEST_CASE(TestPcapNgFileReadWriteAdv)
 
 	// -------
 
+	// copy the .zstd file to a similar file with .zst extension
+	std::ifstream  zstdFile(EXAMPLE2_PCAPNG_ZSTD_WRITE_PATH, std::ios::binary);
+	std::ofstream  zstFile(EXAMPLE2_PCAPNG_ZST_WRITE_PATH,   std::ios::binary);
+	zstFile << zstdFile.rdbuf();
+	zstdFile.close();
+	zstFile.close();
+
 	pcpp::IFileReaderDevice* genericReader = pcpp::IFileReaderDevice::getReader(EXAMPLE2_PCAP_PATH);
 	FileReaderTeardown genericReaderTeardown1(genericReader);
 	PTF_ASSERT_NOT_NULL(dynamic_cast<pcpp::PcapFileReaderDevice*>(genericReader));
@@ -621,6 +631,11 @@ PTF_TEST_CASE(TestPcapNgFileReadWriteAdv)
 
 	genericReader = pcpp::IFileReaderDevice::getReader(EXAMPLE_PCAPNG_ZSTD_WRITE_PATH);
 	FileReaderTeardown genericReaderTeardown3(genericReader);
+	PTF_ASSERT_NOT_NULL(dynamic_cast<pcpp::PcapNgFileReaderDevice*>(genericReader));
+	PTF_ASSERT_TRUE(genericReader->open());
+
+	genericReader = pcpp::IFileReaderDevice::getReader(EXAMPLE2_PCAPNG_ZST_WRITE_PATH);
+	FileReaderTeardown genericReaderTeardown4(genericReader);
 	PTF_ASSERT_NOT_NULL(dynamic_cast<pcpp::PcapNgFileReaderDevice*>(genericReader));
 	PTF_ASSERT_TRUE(genericReader->open());
 
@@ -698,6 +713,7 @@ PTF_TEST_CASE(TestPcapFileReadLinkTypeIPv6)
 	PTF_ASSERT_EQUAL((uint32_t)readerStatistics.packetsRecv, 1);
 	PTF_ASSERT_EQUAL((uint32_t)readerStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 1);
 	PTF_ASSERT_EQUAL(ethCount, 0);
 	PTF_ASSERT_EQUAL(ipCount, 1);
 	PTF_ASSERT_EQUAL(tcpCount, 1);
@@ -741,6 +757,7 @@ PTF_TEST_CASE(TestPcapFileReadLinkTypeIPv4)
 	PTF_ASSERT_EQUAL((uint32_t)readerStatistics.packetsRecv, 2);
 	PTF_ASSERT_EQUAL((uint32_t)readerStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 2);
 	PTF_ASSERT_EQUAL(ethCount, 0);
 	PTF_ASSERT_EQUAL(ipCount, 2);
 	PTF_ASSERT_EQUAL(tcpCount, 0);
@@ -786,6 +803,7 @@ PTF_TEST_CASE(TestSolarisSnoopFileRead)
 	PTF_ASSERT_EQUAL((uint32_t)readerStatistics.packetsRecv, 250);
 	PTF_ASSERT_EQUAL((uint32_t)readerStatistics.packetsDrop, 0);
 
+	PTF_ASSERT_EQUAL(packetCount, 250);
 	PTF_ASSERT_EQUAL(ethCount, 142);
 	PTF_ASSERT_EQUAL(ethDot3Count, 108);
 	PTF_ASSERT_EQUAL(ipCount, 71);

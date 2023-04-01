@@ -45,9 +45,11 @@ namespace pcpp
 		PacketLogModuleDnsLayer, ///< DnsLayer module (Packet++)
 		PacketLogModuleMplsLayer, ///< MplsLayer module (Packet++)
 		PacketLogModuleIcmpLayer, ///< IcmpLayer module (Packet++)
+		PacketLogModuleIcmpV6Layer, ///< IcmpV6Layer module (Packet++)
 		PacketLogModuleGreLayer, ///< GreLayer module (Packet++)
 		PacketLogModuleSSLLayer, ///< SSLLayer module (Packet++)
 		PacketLogModuleSllLayer, ///< SllLayer module (Packet++)
+		PacketLogModuleNflogLayer, ///< NflogLayer module (Packet++)
 		PacketLogModuleDhcpLayer, ///< DhcpLayer module (Packet++)
 		PacketLogModuleDhcpV6Layer, ///< DhcpV6Layer module (Packet++)
 		PacketLogModuleIgmpLayer, ///< IgmpLayer module (Packet++)
@@ -62,6 +64,14 @@ namespace pcpp
 		PacketLogModuleIPSecLayer, ///< IPSecLayers module (Packet++)
 		PacketLogModuleNtpLayer, ///< NtpLayer module (Packet++)
 		PacketLogModuleTelnetLayer, ///< TelnetLayer module (Packet++)
+		PacketLogModuleStpLayer, ///< StpLayer module (Packet++)
+		PacketLogModuleLLCLayer, ///< LLCLayer module (Packet++)
+		PacketLogModuleSingleCommandTextProtocolLayer, ///< SingleCommandTextProtocol module (Packet++)
+		PacketLogModuleNdpLayer, ///< NdpLayer module (Packet++)
+		PacketLogModuleFtpLayer, ///< FtpLayer module (Packet++)
+		PacketLogModuleSomeIpLayer, ///< SomeIpLayer module (Packet++)
+		PacketLogModuleSomeIpSdLayer, ///< SomeIpSdLayer module (Packet++)
+		PacketLogModuleWakeOnLanLayer, ///< WakeOnLanLayer module (Packet++)
 		PcapLogModuleWinPcapLiveDevice, ///< WinPcapLiveDevice module (Pcap++)
 		PcapLogModuleRemoteDevice, ///< WinPcapRemoteDevice module (Pcap++)
 		PcapLogModuleLiveDevice, ///< PcapLiveDevice module (Pcap++)
@@ -148,7 +158,7 @@ namespace pcpp
 		 * Set all PcapPlusPlus modules to a certain log level
 		 * @param[in] level The log level to set all modules to
 		 */
-		void setAllModlesToLogLevel(LogLevel level) { for (int i=1; i<NumOfLogModules; i++) m_LogModulesArray[i] = level; }
+		void setAllModulesToLogLevel(LogLevel level) { for (int i=1; i<NumOfLogModules; i++) m_LogModulesArray[i] = level; }
 
 		/**
 		 * Set a custom log printer.

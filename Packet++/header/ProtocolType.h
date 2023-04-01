@@ -262,6 +262,46 @@ namespace pcpp
 	 */
 	const ProtocolType Telnet = 0x8000000000;
 
+  	/**
+   	 * File Transfer (FTP) Protocol
+	 */
+	const ProtocolType FTP = 0x10000000000;
+
+	/**
+	 * ICMPv6 protocol
+	 */
+	const ProtocolType ICMPv6 = 0x20000000000;
+
+	/**
+	 * Spanning Tree Protocol
+	 */
+	const ProtocolType STP = 0x40000000000;
+
+	/**
+	 * Logical Link Control (LLC)
+	 */
+	const ProtocolType LLC = 0x80000000000;
+
+	/**
+	 * SOME/IP Base protocol
+	 */
+	const ProtocolType SomeIP = 0x100000000000;
+
+	/**
+	 * Wake On LAN (WOL) Protocol
+	 */
+	const ProtocolType WakeOnLan = 0x200000000000;
+
+	/**
+	 * NFLOG (Linux Netfilter NFLOG) Protocol
+	 */
+	const ProtocolType NFLOG = 0x400000000000;
+
+	/**
+	 * TPKT protocol
+	 */
+	const ProtocolType TPKT = 0x800000000000;
+
 	/**
 	 * An enum representing OSI model layers
 	 */
